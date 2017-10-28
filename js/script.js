@@ -10,40 +10,42 @@ $(function () {
 let checkForm = {"name_field":false,
     "email_field":false,
     "activity_field":false,
-    "credit_field:":false
+    "credit_card_field":false,
+    "zip_field":false,
+    "cvv_field":false
 };
-// $('#name').change(function (e) {
-//     let usrInput = (e.target.value);
-//     console.log(usrInput.length);
-//     if (usrInput.length === 0){
-//         console.log("empty");
-//         $(this).css("border","red");
-//     }
-// });
+
 $('#name').keydown(function (e) {
     let usrInput = (e.target.value);
 
     if (usrInput === "") {
         $(this).css("border", "5px solid #f11");
-
+        $(this).after("<p class='namemsg'>Enter Name!</p>");
     }
     else{
         $(this).css("border", "none");
         checkForm.name_field = true;
+        $('.namemsg').hide();
     }
     console.log(checkForm.name_field);
 });
 
 $('#mail').keydown(function (e) {
     let emailInput = (e.target.value);
-    console.log(emailInput);
-    let whitespace = new RegExp('\s');
-    let em = new RegExp('^[A-Z0-9._%+-]+@[A-Z0-9.-]+.[A-Z]{2,4}$');
-    if (whitespace.test(emailInput)){
-        console.log("Please Enter an email address");
+
+    if (emailInput === "") {
+        $(this).css("border", "5px solid #f11");
+        $(this).after("<p class='mailmsg'>Enter an email!</p>");
     }
-    else if (em.test(emailInput)){
-        console.log("Valid Email address");
+    else if (emailInput.indexOf('@')=== -1 && emailInput.indexOf('.com')=== -1){
+        $(this).css("border", "5px solid #f11");
+        $(this).after("<p class='mailmsg'>Enter a valid email!</p>");
+    }
+    else {
+        $(this).css("border", "none");
+        $('.mailmsg').hide();
+        checkForm.email_field = true;
+
     }
 });
 function showCCInfo(){
@@ -63,9 +65,7 @@ function showbitcoinInfo(){
 }
 const jobRole = document.querySelector('#title');
 const basicInfo = document.querySelectorAll('fieldset')[0];
-// jobRole.addEventListener('change',function(){
-//     $(this option:selected)
-// });
+
 
 //when other option selected create textarea with toggle
 $('#title').change(function () {
@@ -156,19 +156,19 @@ activities.addEventListener('change', (e) => {
     if (total > 0) {
         totalDiv.textContent = "Total: $"+total;
         $('#totalDiv').show();
+        $('.actmsg').hide();
+        $('.activities').css("border","none");
 
     }
     else {
         $('#totalDiv').hide();
+        $('.activities').after("<p class='actmsg'>Must check at least one!</p>");
+        $('.activities').css("border","5px solid #f11");
+
     }
     console.log(totalDiv.textContent);
 
 });
-
-//do a case switch and add id to paypal and bitcoin divs
-// $('fieldset').eq(3).change(function (e) {
-//    console.log(e.target);
-// });
 
 $('#payment').change(function (e) {
     const paymentOption = $( "select#payment option:checked" ).val();
@@ -181,5 +181,76 @@ $('#payment').change(function (e) {
     }
     else{
         showbitcoinInfo();
+    }
+});
+
+$('#cc-num').keydown(function (e) {
+    $('.ccmsg').remove();
+    const ccNum = e.target.value;
+    let regex2 = /^[\d]{12,15}$/;
+    // if (regex.test(ccNum) && ccNum.length < 17){
+    //     console.log("13-16");
+    // }
+    if(!regex2.test(ccNum)){
+        $(this).css("border","5px solid #f11");
+        $(this).after("<p class='ccmsg'>Enter 13-16 digits only!</p>");
+    }
+    else {
+        checkForm.credit_card_field = true;
+        $(this).css("border","none");
+    }
+});
+
+$('#zip').keydown(function (e) {
+    $('.zipmsg').remove();
+    const zipNum = e.target.value;
+    const zipNumLength = zipNum.length;
+    const containsLetters = /[a-zA-z]/;
+    if (zipNumLength < 5 && !containsLetters.test(zipNum)){
+        $(this).css("border","5px solid #f11");
+        $(this).after("<p class='zipmsg'>Need 5 digits!</p>");
+    }
+    else if (zipNumLength > 5 && !containsLetters.test(zipNum)){
+        $(this).css("border","5px solid #f11");
+        $(this).after("<p class='zipmsg'>Over 5 digits!</p>");
+    }
+    else if (containsLetters.test(zipNum)){
+        $(this).css("border","5px solid #f11");
+        $(this).after("<p class='zipmsg'>Only numbers!</p>");
+    }
+    else {
+        $(this).css("border","none");
+        checkForm.zip_field = true;
+    }
+});
+$('#cvv').keydown(function (e) {
+    $('.cvvmsg').remove();
+    $(this).css("border","none");
+    const cvvNum = e.target.value;
+    const cvvNumLength = cvvNum.length;
+    const containsLetters = /[a-zA-z]/;
+    if (cvvNumLength < 3 && !containsLetters.test(cvvNum)){
+        $(this).css("border","5px solid #f11");
+        $(this).after("<p class='cvvmsg'>Need 3 digits!</p>");
+    }
+    else if (cvvNumLength > 3 && !containsLetters.test(cvvNum)){
+        $(this).css("border","5px solid #f11");
+        $(this).after("<p class='cvvmsg'>Over 3 digits!</p>");
+    }
+    else if (containsLetters.test(cvvNum)){
+        $(this).css("border","5px solid #f11");
+        $(this).after("<p class='cvvmsg'>Only numbers!</p>");
+    }
+    else if (cvvNumLength === 3){
+        console.log("good");
+        $('.cvvmsg').remove();
+        $(this).css("border","none");
+        checkForm.cvv_field = true;
+    }
+});
+
+$('form').submit(function (e) {
+    for (let i =0; i < checkForm.length; i++){
+
     }
 });
