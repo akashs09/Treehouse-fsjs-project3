@@ -1,25 +1,29 @@
-//When DOM is loaded
+//When DOM is loaded initiate the requirements of hiding and selecting input values
 $(function () {
-    //focus on first input field
     $('input')[0].focus();
     $('#other-role').hide();
-    $('#color option').hide();
+    $('#color').hide();
     $('#payment option:eq(1)').prop('selected',true);
     $('#design option:eq(0)').prop('selected',true);
     showCCInfo();
 
 });
+//constructing a checklist that on each of the validation fields will turn true if user supplies correct information
 let checkForm = {"name":false,
     "mail":false,
     "act":false,
-    "ccmsg":false,
+    "ccnum":false,
     "zip":false,
     "cvv":false
 };
 
-$('#name').keydown(function (e) {
-    let usrInput = (e.target.value);
+//checks to see if name is blank (needs to have a value)
+$('#name').on('input',function (e) {
+  $('.namemsg').remove();
 
+    let usrInput = (e.target.value);
+    console.log(usrInput);
+    let whiteRegex = /[\s]/g;
     if (usrInput === "") {
         $(this).css("border", "5px solid #f11");
         $(this).after("<p class='namemsg'>Enter Name!</p>");
@@ -29,17 +33,18 @@ $('#name').keydown(function (e) {
         checkForm.name = true;
         $('.namemsg').hide();
     }
-    // console.log(checkForm.name_field);
 });
-
-$('#mail').keydown(function (e) {
+//check to see if email is field is empty and if it does have the @ and .com using regex throwing an error
+$('#mail').on('input',function (e) {
+  console.log("test");
+    $('.mailmsg').remove();
     let emailInput = (e.target.value);
-
+    let mailRegex = /[a-zA-z]*@[a-zA-z]*\.[a-z]+/g;
     if (emailInput === "") {
         $(this).css("border", "5px solid #f11");
         $(this).after("<p class='mailmsg'>Enter an email!</p>");
     }
-    else if (emailInput.indexOf('@')=== -1 && emailInput.indexOf('.com')=== -1){
+    else if (!mailRegex.test(emailInput)){
         $(this).css("border", "5px solid #f11");
         $(this).after("<p class='mailmsg'>Enter a valid email!</p>");
     }
@@ -50,6 +55,8 @@ $('#mail').keydown(function (e) {
 
     }
 });
+
+//--------helper functions to hide payment information depending on what is clicked-----------
 function showCCInfo(){
     $('#credit-card').show();
     $('#paypal').hide();
@@ -65,11 +72,14 @@ function showbitcoinInfo(){
     $('#paypal').hide();
     $('#bitcoin').show();
 }
+//----------------------------------------------------------------------------------------------
+
+
+
+
 const jobRole = document.querySelector('#title');
 const basicInfo = document.querySelectorAll('fieldset')[0];
-
-
-//when other option selected create textarea with toggle
+//when other option selected create textarea with toggle for description
 $('#title').change(function () {
     $('#other-title').hide();
     const currOption = $( "select#title option:checked" ).val();
@@ -82,37 +92,39 @@ $('#title').change(function () {
         $('#other-role').hide();
     }
 });
-
+//hides t-shirts based on design - only shows what is available depending on design
 $('#design').change(function (e) {
     const designValue = ($('select#design option:checked')).val();
     const colorLength = $('#color').length;
     console.log(designValue);
 
     if (designValue === 'js puns'){
+      $('#color').show();
         // $('#color option').show();
         $('.puns').show();
         $('.heart').hide();
     }
     else if (designValue === 'heart js'){
         // $('#color option').show();
+        $('#color').show();
         $('.heart').show();
         $('.puns').hide();
     }
     else if (designValue === 'Select Theme'){
+      $('#color').hide();
         $('#color option').hide();
         $('.puns').hide();
         $('.heart').hide();
     }
 });
 
+
 const activities = document.querySelector('.activities');
 const totalDiv = document.createElement('div');
 totalDiv.setAttribute("id", "totalDiv");
 activities.appendChild(totalDiv);
-
+//cancels out events with the same other time and totals them up. Need to have one selected
 activities.addEventListener('change', (e) => {
-    // const str = e.target.parentNode.textContent
-    // totalDiv.setAttribute("class", "is-hidden");
     const inputs = $('.activities input');
     const labels = $('.activities label');
     let total=0;
@@ -141,33 +153,27 @@ activities.addEventListener('change', (e) => {
     else {
         inputs[2].removeAttribute("disabled");
     }
-
     for (let i =0; i < inputs.length; i++) {
         if(inputs[i].checked){
             let str = labels[i].textContent;
             total +=parseInt(str.substring(str.indexOf("$")+1));
         }
     }
-
     if (total > 0) {
         totalDiv.textContent = "Total: $"+total;
         $('#totalDiv').show();
         $('.actmsg').hide();
         $('.activities').css("border","none");
         checkForm.act = true;
-
     }
     else {
         $('#totalDiv').hide();
         $('.activities').after("<p class='actmsg'>Must check at least one!</p>");
         $('.activities').css("border","5px solid #f11");
-
     }
-    console.log(totalDiv.textContent);
-
 });
-
-$('#payment').change(function (e) {
+//show and hides other payment info
+$('#payment').on('input',function (e) {
     const paymentOption = $( "select#payment option:checked" ).val();
     console.log(paymentOption);
     if (paymentOption === 'credit card' || paymentOption ==='select_method'){
@@ -180,25 +186,23 @@ $('#payment').change(function (e) {
         showbitcoinInfo();
     }
 });
-
-$('#cc-num').keydown(function (e) {
+//only accepts 13-16 digits
+$('#ccnum').on('input',function (e) {
     $('.ccmsg').remove();
     const ccNum = e.target.value;
-    let regex2 = /^[\d]{12,15}$/;
-    // if (regex.test(ccNum) && ccNum.length < 17){
-    //     console.log("13-16");
-    // }
+    let regex2 = /^[\d]{13,16}$/;
+
     if(!regex2.test(ccNum)){
         $(this).css("border","5px solid #f11");
         $(this).after("<p class='ccmsg'>Enter 13-16 digits only!</p>");
     }
     else {
-        checkForm.ccmsg = true;
+        checkForm.ccnum = true;
         $(this).css("border","none");
     }
 });
-
-$('#zip').keydown(function (e) {
+//throws specific errors if numbers are not in input or if length of zip is over 5 or less than 5
+$('#zip').on('input',function (e) {
     $('.zipmsg').remove();
     const zipNum = e.target.value;
     const zipNumLength = zipNum.length;
@@ -220,7 +224,10 @@ $('#zip').keydown(function (e) {
         checkForm.zip = true;
     }
 });
-$('#cvv').keydown(function (e) {
+
+//throws custom errors if cvv contains letters, is over 3 or less than 3
+$('#cvv').on('input',function (e) {
+
     $('.cvvmsg').remove();
     $(this).css("border","none");
     const cvvNum = e.target.value;
@@ -245,17 +252,18 @@ $('#cvv').keydown(function (e) {
         checkForm.cvv = true;
     }
 });
-
+//iterates through checkForm and if any fields are blank or not validly inputted does not let you submit
 $('#form').submit(function (e) {
 
     for (var key in checkForm){
-        console.log(key,checkForm[key]);
+
         if (checkForm[key] === false){
             $('.submitmsg').remove();
             e.preventDefault();
             $('#'+key).css("border", "5px solid #f11");
             $('header').after("<p class='submitmsg'>Please fix errors below</p>");
             $('html,body').scrollTop(0);
+
         }
     }
 });
