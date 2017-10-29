@@ -7,12 +7,12 @@ $(function () {
     showCCInfo();
 
 });
-let checkForm = {"name_field":false,
-    "email_field":false,
-    "activity_field":false,
-    "credit_card_field":false,
-    "zip_field":false,
-    "cvv_field":false
+let checkForm = {"name":false,
+    "mail":false,
+    "act":false,
+    "ccmsg":false,
+    "zip":false,
+    "cvv":false
 };
 
 $('#name').keydown(function (e) {
@@ -158,6 +158,7 @@ activities.addEventListener('change', (e) => {
         $('#totalDiv').show();
         $('.actmsg').hide();
         $('.activities').css("border","none");
+        checkForm.activity_field = true;
 
     }
     else {
@@ -249,8 +250,19 @@ $('#cvv').keydown(function (e) {
     }
 });
 
-$('form').submit(function (e) {
-    for (let i =0; i < checkForm.length; i++){
-
+$('#form').submit(function (e) {
+    // $.each(checkForm, function (k,v) {
+    //    console.log(k.value);
+    // });
+    for (var key in checkForm){
+        console.log(key,checkForm[key]);
+        if (checkForm[key] === false){
+            $('.submitmsg').remove();
+            e.preventDefault();
+            $('#'+key).css("border", "5px solid #f11");
+            $('header').after("<p class='submitmsg'>Please fix errors below</p>");
+            $('html,body').scrollTop(0);
+        }
     }
+    // e.preventDefault();
 });
