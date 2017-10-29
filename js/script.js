@@ -2,8 +2,10 @@
 $(function () {
     //focus on first input field
     $('input')[0].focus();
+    $('#other-role').hide();
     $('#color option').hide();
     $('#payment option:eq(1)').prop('selected',true);
+    $('#design option:eq(0)').prop('selected',true);
     showCCInfo();
 
 });
@@ -24,10 +26,10 @@ $('#name').keydown(function (e) {
     }
     else{
         $(this).css("border", "none");
-        checkForm.name_field = true;
+        checkForm.name = true;
         $('.namemsg').hide();
     }
-    console.log(checkForm.name_field);
+    // console.log(checkForm.name_field);
 });
 
 $('#mail').keydown(function (e) {
@@ -44,7 +46,7 @@ $('#mail').keydown(function (e) {
     else {
         $(this).css("border", "none");
         $('.mailmsg').hide();
-        checkForm.email_field = true;
+        checkForm.mail = true;
 
     }
 });
@@ -69,46 +71,40 @@ const basicInfo = document.querySelectorAll('fieldset')[0];
 
 //when other option selected create textarea with toggle
 $('#title').change(function () {
+    $('#other-title').hide();
     const currOption = $( "select#title option:checked" ).val();
     let otherRole = document.createElement('textarea');
     if (currOption === 'other') {
-        otherRole.setAttribute("id","other-title");
-        otherRole.setAttribute("placeholder", "Your Job Role");
-        basicInfo.appendChild(otherRole);
+        $('#other-role').show();
     }
     else {
-        $('#other-title').remove();
+        console.log("da");
+        $('#other-role').hide();
     }
 });
 
-// $('#design').change(function (e) {
-//     const designValue = ($('select#design option:checked'));
-//     const colorLength = $('#color').length;
-//     console.log(designValue.val());
-//     console.log(e.target[1]);
-//     console.log((e.target));
-//     if (designValue.val() === 'js puns') {
-//
-//         $('#color [value=js puns]').show();
-//         console.log("fucjing show");
-//         // $('#color option:eq(0)').show();
-//         // showPunColors('Puns',colorLength);
-//     }
-//     else if (designValue.val() === 'Select Theme')
-//     {
-//         $('#color option').hide();
-//     }
-// });
+$('#design').change(function (e) {
+    const designValue = ($('select#design option:checked')).val();
+    const colorLength = $('#color').length;
+    console.log(designValue);
 
-// function showPunColors(key,l) {
-//     console.log($('select#color option')[2].textContent);
-//     console.log("Gold".indexOf($('select#color option')[2].textContent));
-//     for(let i =0; i < l; i++) {
-//         if (key.indexOf($('select#color option')[i].innerHTML) > -1) {
-//             console.log($('select#color').innerHTML);
-//         }
-//     }
-// }
+    if (designValue === 'js puns'){
+        // $('#color option').show();
+        $('.puns').show();
+        $('.heart').hide();
+    }
+    else if (designValue === 'heart js'){
+        // $('#color option').show();
+        $('.heart').show();
+        $('.puns').hide();
+    }
+    else if (designValue === 'Select Theme'){
+        $('#color option').hide();
+        $('.puns').hide();
+        $('.heart').hide();
+    }
+});
+
 const activities = document.querySelector('.activities');
 const totalDiv = document.createElement('div');
 totalDiv.setAttribute("id", "totalDiv");
@@ -158,7 +154,7 @@ activities.addEventListener('change', (e) => {
         $('#totalDiv').show();
         $('.actmsg').hide();
         $('.activities').css("border","none");
-        checkForm.activity_field = true;
+        checkForm.act = true;
 
     }
     else {
@@ -197,7 +193,7 @@ $('#cc-num').keydown(function (e) {
         $(this).after("<p class='ccmsg'>Enter 13-16 digits only!</p>");
     }
     else {
-        checkForm.credit_card_field = true;
+        checkForm.ccmsg = true;
         $(this).css("border","none");
     }
 });
@@ -221,7 +217,7 @@ $('#zip').keydown(function (e) {
     }
     else {
         $(this).css("border","none");
-        checkForm.zip_field = true;
+        checkForm.zip = true;
     }
 });
 $('#cvv').keydown(function (e) {
@@ -246,14 +242,12 @@ $('#cvv').keydown(function (e) {
         console.log("good");
         $('.cvvmsg').remove();
         $(this).css("border","none");
-        checkForm.cvv_field = true;
+        checkForm.cvv = true;
     }
 });
 
 $('#form').submit(function (e) {
-    // $.each(checkForm, function (k,v) {
-    //    console.log(k.value);
-    // });
+
     for (var key in checkForm){
         console.log(key,checkForm[key]);
         if (checkForm[key] === false){
@@ -264,5 +258,4 @@ $('#form').submit(function (e) {
             $('html,body').scrollTop(0);
         }
     }
-    // e.preventDefault();
 });
