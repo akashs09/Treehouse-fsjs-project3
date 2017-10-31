@@ -22,8 +22,10 @@ $('#name').on('input',function (e) {
   $('.namemsg').remove();
 
     let usrInput = (e.target.value);
+    console.log(usrInput.length);
     console.log(usrInput);
     let whiteRegex = /[\s]/g;
+    usrInput = usrInput.replace(/\s/g,"");
     if (usrInput === "") {
         $(this).css("border", "5px solid #f11");
         $(this).after("<p class='namemsg'>Enter Name!</p>");
@@ -36,15 +38,16 @@ $('#name').on('input',function (e) {
 });
 //check to see if email is field is empty and if it does have the @ and .com using regex throwing an error
 $('#mail').on('input',function (e) {
-  console.log("test");
+
     $('.mailmsg').remove();
     let emailInput = (e.target.value);
     let mailRegex = /[a-zA-z]*@[a-zA-z]*\.[a-z]+/g;
+    let mailRegex2 = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     if (emailInput === "") {
         $(this).css("border", "5px solid #f11");
         $(this).after("<p class='mailmsg'>Enter an email!</p>");
     }
-    else if (!mailRegex.test(emailInput)){
+    else if (!mailRegex2.test(emailInput)){
         $(this).css("border", "5px solid #f11");
         $(this).after("<p class='mailmsg'>Enter a valid email!</p>");
     }
@@ -170,6 +173,7 @@ activities.addEventListener('change', (e) => {
         $('#totalDiv').hide();
         $('.activities').after("<p class='actmsg'>Must check at least one!</p>");
         $('.activities').css("border","5px solid #f11");
+        checkForm.act = false;
     }
 });
 //show and hides other payment info
@@ -181,9 +185,15 @@ $('#payment').on('input',function (e) {
     }
     else if (paymentOption === "paypal") {
        showpaypalInfo();
+       checkForm.ccnum = true;
+       checkForm.zip = true;
+       checkForm.cvv = true;
     }
     else{
         showbitcoinInfo();
+        checkForm.ccnum = true;
+        checkForm.zip = true;
+        checkForm.cvv = true;
     }
 });
 //only accepts 13-16 digits
@@ -255,15 +265,15 @@ $('#cvv').on('input',function (e) {
 //iterates through checkForm and if any fields are blank or not validly inputted does not let you submit
 $('#form').submit(function (e) {
 
+
     for (var key in checkForm){
 
         if (checkForm[key] === false){
             $('.submitmsg').remove();
             e.preventDefault();
             $('#'+key).css("border", "5px solid #f11");
-            $('header').after("<p class='submitmsg'>Please fix errors below</p>");
+            $('header').after("<p class='submitmsg'>Please fix error(s) below</p>");
             $('html,body').scrollTop(0);
-
         }
     }
 });
